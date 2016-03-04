@@ -24,7 +24,7 @@ if not PY34_PLUS:
 
 setup(
     name='sentinella',
-    version='0.2.1',
+    version='0.2.2',
     description='A Python agent based on Tourbillon for collecting OpenStack metrics and logs'
     ' and store them into Sentinel.la',
     packages=find_packages(exclude=exclude),

@@ -1,3 +1,9 @@
+sentinella-agent (0.2.2) stable; urgency=medium
+
+  * Fixed memory total collection in metrics.py
+  
+ -- The Sentinel.la Team <hello@sentinel.la>  Fri, 04 Mar 2016 13:55:02 +0000
+
 sentinella-agent (0.2.1) stable; urgency=medium
 
   * Fixed trollius From_to dependency in metrics.py

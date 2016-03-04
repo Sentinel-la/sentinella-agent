@@ -114,7 +114,7 @@ def get_server_usage_stats(agent):
             data['stats']['platform']['processor']['flags'] = cpuinfo.get_cpu_info()['flags']
             
             data['stats']['platform']['memory'] = {}
-            data['stats']['platform']['memory']['total'] = m.total
+            data['stats']['platform']['memory']['total'] = memory.total
 
             p = subprocess.Popen(["nova-manage", "version"], stdout=subprocess.PIPE)
             version = p.communicate()[0]
