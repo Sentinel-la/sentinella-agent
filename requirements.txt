@@ -1,4 +1,11 @@
 click==5.1
-influxdb==2.9.1
 trollius==2.0
 pip==7.1.2
+requests==2.9.1
+requestsexceptions==1.1.1
+simplejson==3.8.1
+python-novaclient==3.1.0
+python-neutronclient==3.1.0
+py-cpuinfo==0.1.8
+psutil==3.1.1
+watchdog==0.8.3

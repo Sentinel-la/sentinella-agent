@@ -17,11 +17,10 @@ PY27 = sys.version_info[0] == 2 and sys.version_info[1] == 7
 LOG_FORMAT_EX = '%(asctime)s %(levelname)s [%(name)s %(filename)s:'\
     '%(funcName)s:%(lineno)d] %(message)s'
 LOG_FORMAT_NO = '%(asctime)s %(levelname)s %(message)s'
-LOG_FILENAME = '/var/log/tourbillon/tourbillon.log'
+LOG_FILENAME = '/var/log/sentinella/sentinella.log'
 
-INDEX_FILE_URL = 'https://raw.githubusercontent.com/tourbillon-python/'\
-    'tourbillon-agent/master/meta/plugin_index.json'
-
+INDEX_FILE_URL = 'https://raw.githubusercontent.com/Sentinel-la/'\
+    'sentinella-agent-plugins/master/plugin_index.json'
 
 def get_index():
     data = urlopen(INDEX_FILE_URL).read()
@@ -34,7 +33,7 @@ def get_index():
 
 
 @click.group()
-@click.version_option(version='0.1')
+@click.version_option(version='0.2.1')
 @click.option('--config',
               '-c',
               type=click.Path(exists=False,
@@ -42,7 +41,7 @@ def get_index():
                               dir_okay=False,
                               writable=False,
                               resolve_path=True),
-              default='/etc/tourbillon/tourbillon.conf',
+              default='/etc/sentinella/sentinella.conf',
               help='specify a different config file',
               metavar='<config_file>')
 @click.option('--pidfile',
@@ -52,75 +51,115 @@ def get_index():
                               dir_okay=False,
                               writable=False,
                               resolve_path=True),
-              default='/var/run/tourbillon/tourbillon.pid',
+              default='/var/run/sentinella/sentinella.pid',
               help='specify a different pidfile file',
               metavar='<pidfile_file>')
 def cli(config, pidfile):
-    """tourbillon: send metrics to an influxdb"""
+    """sentinella: send OpenStack logs and metrics to Sentinel.la"""
     pass
 
 
 @cli.command()
 @click.pass_context
 def init(ctx):
-    """initialize the tourbillon configuration"""
+    """initialize the sentinella agent configuration"""
     config_file = ctx.parent.params['config']
-    click.echo(click.style('\nConfigure Tourbillon agent\n',
+    
+    mon_list = [{'nova': [{'nova-api': {'process': 'nova-api', 'log': '/var/log/nova/nova-api.log'}},
+                          {'nova-scheduler': {'process': 'nova-scheduler', 'log': '/var/log/nova/nova-scheduler.log'}},
+                          {'nova-compute': {'process': 'nova-compute', 'log': '/var/log/nova/nova-compute.log'}},
+                          {'nova-cert': {'process': 'nova-cert', 'log': '/var/log/nova/nova-cert.log'}},
+                          {'nova-conductor': {'process': 'nova-conductor', 'log': '/var/log/nova/nova-conductor.log'}},
+                          {'nova-novncproxy': {'process': 'nova-novncproxy', 'log': '/var/log/nova/nova-novncproxy.log'}}
+                        ]},
+                {'neutron': [{'neutron-server': {'process': 'neutron-server', 'log': '/var/log/neutron/server.log'}},
+                             {'neutron-dhcp-agent': {'process': 'neutron-dhcp-agent', 'log': '/var/log/neutron/dhcp-agent.log'}},
+                             {'neutron-openvswitch-agent': {'process': 'neutron-openvswitch-agent', 'log': '/var/log/neutron/openvswitch-agent.log'}},
+                             {'neutron-l3-agent': {'process': 'neutron-openvswitch-agent', 'log': '/var/log/neutron/l3-agent.log'}},
+                             {'neutron-metadata-agent': {'process': 'neutron-metadata-agent', 'log': '/var/log/neutron/metadata-agent.log '}}
+                        ]}
+                ]
+    
+    responses = {'api_url': 'https://api.sentinel.la',
+                 'log_format': '',
+                 'log_file': '/var/log/sentinella/sentinella.log',
+                 'log_level': 'INFO',
+                 'plugins_conf_dir': '/etc/sentinella/conf.d',
+                 'openstack_services': {}, 'openstack_credentials': {},
+                 'plugins': {'sentinella.metrics': ['get_server_usage_stats'],
+                             'sentinella.openstack_logs': ['get_logfile_metrics']}}
+
+    click.echo(click.style('\nSentinel.la agent configuration\n',
                            fg='blue', bold=True, underline=True))
-    click.echo(click.style('InfluxDB configuration\n',
+    
+    configure = click.prompt('\nDo you want to configure the parameters now?', default='yes', type=bool)
+    if not configure:
+        click.echo(click.style('You can configure sentinella later by running:\nsentinella init\n', fg='magenta'))
+        sys.exit()
+    
+    responses['account_key'] = click.prompt('Enter your Account Key', default='', confirmation_prompt=True)
+    
+    if not responses['account_key']:
+        click.echo(click.style('\nConfiguration aborted, Account Key missing\n', fg='red'))
+        click.echo(click.style('You can configure sentinella later by running:\nsentinella init\n', fg='magenta'))
+        sys.exit()
+    
+    click.echo(click.style('\nOpenStack configuration\n',
                            fg='magenta', underline=True))
-    host = click.prompt('Enter the InfluxDB hostname', default='localhost')
-    port = click.prompt('Enter the InfluxDB port', default=8086, type=int)
-    username = click.prompt('Enter the InfluxDB username [Enter for no auth]',
-                            default='',
-                            show_default=False)
-    password = None
-    if username:
-        password = click.prompt('Enter the InfluxDB password',
-                                hide_input=True,
-                                confirmation_prompt=True)
+    
+    responses['openstack_credentials']['user'] = click.prompt('Enter OpenStack user', default='admin')
+    
+    if not responses['openstack_credentials']['user']:
+        click.echo(click.style('\nConfiguration aborted, OpenStack user missing\n', fg='red'))
+        click.echo(click.style('You can configure sentinella later by running:\nsentinella init\n', fg='magenta'))
+        sys.exit()
+        
+    responses['openstack_credentials']['password'] = click.prompt('Enter OpenStack password', hide_input=True, confirmation_prompt=True, default='')
 
-    click.echo(click.style('\nLogging configuration\n',
-                           fg='magenta', underline=True))
-    log_level = click.prompt('Enter the log level', type=click.Choice([
-                             'CRITICAL',
-                             'ERROR',
-                             'WARNING',
-                             'INFO',
-                             'DEBUG'
-                             ]), default='INFO')
-    log_format = click.prompt('Enter the log format', type=click.Choice([
-        'default',
-        'extended']), default='default')
+    if not responses['openstack_credentials']['password']:
+        click.echo(click.style('\nConfiguration aborted, OpenStack password missing\n', fg='red'))
+        click.echo(click.style('You can configure sentinella later by running:\nsentinella init\n', fg='magenta'))
+        sys.exit()
+        
+    responses['openstack_credentials']['project'] = click.prompt('Enter OpenStack project', default='admin')
+    
+    if not responses['openstack_credentials']['project']:
+        click.echo(click.style('\nConfiguration aborted, OpenStack project missing\n', fg='red'))
+        click.echo(click.style('You can configure sentinella later by running:\nsentinella init\n', fg='magenta'))
+        sys.exit()
+        
+    responses['openstack_credentials']['auth_url'] = click.prompt('Enter OpenStack auth url [http://<keystone_endpoint_ip>:35357/v2.0]', show_default=False, default='')
+    
+    if not responses['openstack_credentials']['auth_url']:
+        click.echo(click.style('\nConfiguration aborted, OpenStack auth url missing\n', fg='red'))
+        click.echo(click.style('You can configure sentinella later by running:\nsentinella init\n', fg='magenta'))
+        sys.exit()
 
-    log_file = click.prompt('Enter the log filename', default=LOG_FILENAME)
+    for item in mon_list:
+        component = item.keys()
+        for service_items in item.values():
+            for service_item in service_items:
+                service = service_item.keys()[0]
+                values = service_item.values()[0]
 
-    fmt = LOG_FORMAT_NO if log_format == 'default' else LOG_FORMAT_EX
-    config = {
-        'database': {
-            'host': host,
-            'port': port
-        },
-        'log_format': fmt,
-        'log_level': log_level,
-        'log_file': log_file,
-        'plugins_conf_dir': '${tourbillon_conf_dir}/conf.d'
-    }
-    if username:
-        config['database']['username'] = username
-        config['database']['password'] = password
+                responses['openstack_services'][service] = click.prompt('\nMonitor ' + service + '?', default='yes', type=bool)
+                
+                if responses['openstack_services'][service]:
+                    responses['openstack_services'][service] = {}
+                    responses['openstack_services'][service]['process'] = click.prompt('Name of the ' + values['process'] + ' process', default=values['process'], type=str)
+                    responses['openstack_services'][service]['log'] = click.prompt(service + ' log file', default=values['log'])
 
     with open(config_file, 'w') as f:
-        json.dump(config, f, indent=4)
+        json.dump(responses, f, indent=4)
 
-    click.echo(click.style('\nconfiguration file generated\n', fg='green'))
+    click.echo(click.style('\nconfiguration file generated successfully\n', fg='green'))
 
 
 @cli.command()
 @click.pass_context
 @click.option('--compact', default=False, is_flag=True)
 def list(ctx, compact):
-    """list available tourbillon plugins"""
+    """list available sentinella plugins"""
     index = get_index()
 
     top = '+{:<20}+{:<5}+{:<60}+{:<35}+-+'.format('-' * 20,
@@ -152,7 +191,7 @@ def list(ctx, compact):
 @click.pass_context
 @click.argument('plugin', nargs=1, required=True)
 def install(ctx, plugin):
-    """install tourbillon plugin"""
+    """install sentinella plugin"""
     index = get_index()
     if plugin not in index:
         click.echo(click.style(
@@ -172,7 +211,7 @@ def install(ctx, plugin):
 @click.pass_context
 @click.argument('plugin', nargs=1, required=True)
 def upgrade(ctx, plugin):
-    """upgrade tourbillon plugin"""
+    """upgrade sentinella plugin"""
     index = get_index()
     if plugin not in index:
         click.echo(click.style(
@@ -193,7 +232,7 @@ def upgrade(ctx, plugin):
 @click.pass_context
 @click.argument('plugin', nargs=1, required=True)
 def reinstall(ctx, plugin):
-    """reinstall tourbillon plugin"""
+    """reinstall sentinella plugin"""
     index = get_index()
     if plugin not in index:
         click.echo(click.style(
@@ -266,10 +305,10 @@ PLUGINS are expressed in the form:
 
 Example:
 
-    tourbillon enable tourbillon.linux=get_cpu_usage,get_mem_usage
+    sentinella enable sentinella.metrics=get_server_usage
 
-Enable the functions get_cpu_usage and get_mem_usage of the
-'tourbillon.linux' plugin.
+Enable the function get_server_usage of the
+'sentinella.metrics' plugin.
     """
     config_file = ctx.parent.params['config']
     with open(config_file, 'r') as f:
@@ -311,10 +350,10 @@ PLUGINS are expressed in the form:
 
 Example:
 
-    tourbillon disable tourbillon.linux=get_cpu_usage,get_mem_usage
+    sentinella disable sentinella.metrics=get_server_usage
 
-Disable the functions get_cpu_usage and get_mem_usage of the
-'tourbillon.linux' plugin
+Disable the function get_server_usage of the
+'sentinella.metrics' plugin
     """
     config_file = ctx.parent.params['config']
     with open(config_file, 'r') as f:
@@ -343,13 +382,13 @@ def run(ctx):
     with open(pid_file, 'w') as f:
         f.write(str(os.getpid()))
     config_file = ctx.parent.params['config']
-    from tourbillon.agent import Tourbillon
+    from sentinella.agent import Tourbillon
     ag = Tourbillon(config_file)
     ag.run()
 
 
 def main():
-    cli(prog_name='tourbillon', standalone_mode=False)
+    cli(prog_name='sentinella', standalone_mode=False)
 
 if __name__ == '__main__':
     if __package__ is None:

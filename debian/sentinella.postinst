@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for tourbillon-agent
+# postinst script for sentinella-agent
 #
 # see: dh_installdeb(1)
 
@@ -20,20 +20,21 @@ set -e
 
 case "$1" in
     configure)
-        # create a tourbillon group and user
-        if ! grep -q tourbillon /etc/passwd; then
-                addgroup --system tourbillon
-                adduser --system --group tourbillon
+        # create a sentinella group and user
+        if ! grep -q sentinella /etc/passwd; then
+                addgroup --system sentinella
+                adduser --system --no-create-home --group sentinella
         fi
-        mkdir /var/log/tourbillon
-        chown tourbillon /var/log/tourbillon
-        mkdir /var/run/tourbillon
-        chown tourbillon /var/run/tourbillon
-        chmod 644 /etc/logrotate.d/tourbillon
-        /usr/share/python/tourbillon/bin/tourbillon init
-        update-rc.d tourbillon defaults
-        echo "Install some plugins and start the service with"
-        echo "\tsudo service tourbillon start"
+        mkdir -p /var/log/sentinella
+        chown sentinella /var/log/sentinella
+        mkdir -p /var/run/sentinella
+        chown sentinella /var/run/sentinella
+        chmod 644 /etc/logrotate.d/sentinella
+        ln -fs /usr/share/python/sentinella/bin/sentinella /usr/local/bin/sentinella
+        /usr/share/python/sentinella/bin/sentinella init
+        update-rc.d sentinella defaults
+        echo "Start the service with"
+        echo "\tsudo service sentinella start"
 
     ;;
 

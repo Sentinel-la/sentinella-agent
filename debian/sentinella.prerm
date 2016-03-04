@@ -1,5 +1,5 @@
 #!/bin/sh
-# prerm script for tourbillon-agent
+# prerm script for sentinella-agent
 #
 # see: dh_installdeb(1)
 
@@ -8,8 +8,8 @@ set -e
 
 case "$1" in
   remove|upgrade|deconfigure)
-    /etc/init.d/tourbillon stop 2>/dev/null >/dev/null || true
-    update-rc.d -f tourbillon remove
+    /etc/init.d/sentinella stop 2>/dev/null >/dev/null || true
+    update-rc.d -f sentinella remove
   ;;
 
   failed-upgrade)

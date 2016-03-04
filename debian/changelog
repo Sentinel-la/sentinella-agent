@@ -1,23 +1,18 @@
-tourbillon-agent (0.5) stable; urgency=medium
+sentinella-agent (0.2.1) stable; urgency=medium
 
-  * Fix number of workers for ThreadPoolExecutor
+  * Fixed trollius From_to dependency in metrics.py
+  
+ -- The Sentinel.la Team <hello@sentinel.la>  Wed, 02 Mar 2016 18:13:34 +0000
 
- -- The Tourbillon Team <tourbillonpy@gmail.com>  Tue, 19 Feb 2016 11:00:00 +0000
+sentinella-agent (0.2) stable; urgency=medium
 
-tourbillon-agent (0.4.2) stable; urgency=medium
+  * Fixed bug parsing OpenStack logs regex.
+  * sentinella system user no longer requires a /home
+  
+ -- The Sentinel.la Team <hello@sentinel.la>  Wed, 02 Mar 2016 12:12:43 +0000
 
-  * Fix influxDB client version
+sentinella-agent (0.1) stable; urgency=medium
 
- -- The Tourbillon Team <tourbillonpy@gmail.com>  Tue, 29 Dec 2015 15:42:00 +0000
+  * First public release based on Tourbillon
 
-tourbillon-agent (0.4.1) stable; urgency=medium
-
-  * Fix pip dependency 
-
- -- The Tourbillon Team <tourbillonpy@gmail.com>  Tue, 29 Dec 2015 09:52:55 +0000
-
-tourbillon-agent (0.4) stable; urgency=medium
-
-  * First public release
-
- -- The Tourbillon Team <tourbillonpy@gmail.com>  Mon, 26 Oct 2015 13:44:28 +0000
+ -- The Sentinel.la Team <hello@sentinel.la>  Fri, 13 Feb 2016 23:45:00 +0000

@@ -1,13 +1,13 @@
-Source: tourbillon-agent
+Source: sentinella-agent
 Section: python
 Priority: extra
-Maintainer: The Tourbillon Team <tourbillonpy@gmail.com>
+Maintainer: The Sentinel.la Team <hello@sentinel.la>
 Build-Depends: debhelper (>= 9), python, dh-virtualenv (>= 0.8)
 Standards-Version: 3.9.5
 
-Package: tourbillon
+Package: sentinella
 Architecture: i386 amd64
 Pre-Depends: dpkg (>= 1.16.1), python2.7 ${misc:Pre-Depends}
 Depends: ${python:Depends}, ${misc:Depends}
-Description: Tourbillon is an agent that collect metrics from serveral system/services
- and write it into an InfluxDB
+Description: Sentinella-agent is an agent that collect metrics from serveral system/services
+ and write it into an Sentinel.la

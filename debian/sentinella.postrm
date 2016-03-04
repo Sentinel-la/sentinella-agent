@@ -1,0 +1,35 @@
+#!/bin/sh
+# postrm script for sentinella-agent
+#
+# see: dh_installdeb(1)
+
+set -e
+
+
+case "$1" in
+    remove)
+        ;;
+
+    upgrade)
+        ;;
+
+    purge)
+        rm -rf /etc/sentinella
+        rm -rf /var/log/sentinella
+        rm -rf /var/run/sentinella
+        rm -rf /usr/share/python/sentinella
+        rm -f /etc/profile.d/sentinella.sh
+        rm -f /etc/logrotate.d/sentinella
+        rm -f /usr/local/bin/sentinella
+        userdel sentinella >/dev/null 2>&1 || true
+        groupdel sentinella >/dev/null 2>&1 || true
+        ;;
+
+    failed-upgrade|abort-install|abort-upgrade|disappear)
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+        ;;
+esac

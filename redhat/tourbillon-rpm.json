@@ -40,7 +40,7 @@
             "chmod 755 /etc/init.d/tourbillon",
             "chkconfig --add tourbillon",
             "echo \"Run '/usr/share/python/tourbillon/bin/tourbillon init' to create the tourbillon config file\"",
-            "echo \"Install some plugins and start the service with\"",
+            "echo \"Start the service with\"",
             "echo \"\tsudo /etc/init.d/tourbillon start\""
         ],
         "postun": [
