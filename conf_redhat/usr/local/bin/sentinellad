@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# sentinella service daemon start script.
+#
+# Copyright (C) 2015 The Tourbillon Team
+#
+/usr/share/python/sentinella/bin/sentinella run &

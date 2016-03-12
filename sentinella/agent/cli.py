@@ -33,7 +33,7 @@ def get_index():
 
 
 @click.group()
-@click.version_option(version='0.2.2')
+@click.version_option(version='0.2.4')
 @click.option('--config',
               '-c',
               type=click.Path(exists=False,

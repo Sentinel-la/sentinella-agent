@@ -1,4 +1,4 @@
-_tourbillon()
+_sentinella()
 {
     local cur prev opts base
     COMPREPLY=()
@@ -16,7 +16,7 @@ _tourbillon()
     #
     case "${prev}" in
         install|reinstall|upgrade)
-            local running=$(for x in `tourbillon list --compact`; do echo ${x} ; done )
+            local running=$(for x in `sentinella list --compact`; do echo ${x} ; done )
             COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
             return 0
             ;;
@@ -27,4 +27,4 @@ _tourbillon()
    COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
    return 0
 }
-complete -F _tourbillon tourbillon
+complete -F _sentinella sentinella

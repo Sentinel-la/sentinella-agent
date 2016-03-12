@@ -1,0 +1,76 @@
+{
+    "extensions": {
+        "enabled": [
+            "python_venv",
+            "blocks",
+            "file_extras",
+            "file_permissions"
+        ]
+    },
+    "core": {
+        "group": "Application/System",
+        "license": "ASF",
+        "name": "sentinella",
+        "summary": "A Python agent for collecting metrics, logs and specs and store them into Sentinel.la.",
+        "version": "0.2.4",
+        "url": "https://github.com/Sentinel-la/sentinella-agent"
+    },
+    "python_venv": {
+        "name": "sentinella",
+        "path": "/usr/share/python",
+        "requirements": ["requirements.txt"],
+        "pip_flags": "-U"
+    },
+    "blocks": {
+        "desc": [
+            "A Python agent for collecting metrics, logs and specs and store them into Sentinel.la."
+        ],
+        "post": [
+            "if ! grep -q sentinella /etc/passwd; then",
+            "    groupadd -r sentinella",
+            "    adduser -r -g sentinella sentinella",
+            "fi",
+            "mkdir /var/log/sentinella",
+            "mkdir /var/run/sentinella",
+            "mkdir -p /etc/sentinella/conf.d",
+            "chown sentinella /var/log/sentinella",
+            "chown sentinella /var/run/sentinella",
+            "chmod 644 /etc/logrotate.d/sentinella",
+            "chmod 755 /usr/local/bin/sentinellad",
+            "chmod 755 /etc/init.d/sentinella",
+            "chkconfig --add sentinella",
+            "echo \"Run '/usr/share/python/sentinella/bin/sentinella init' to create the sentinella config file\"",
+            "echo \"Start the service with\"",
+            "echo \"\tsudo /etc/init.d/sentinella start\""
+        ],
+        "postun": [
+            "rm -rf /etc/sentinella",
+            "rm -rf /var/log/sentinella",
+            "rm -rf /var/run/sentinella",
+            "rm -rf /usr/share/python/sentinella",
+            "rm -f /etc/profile.d/sentinella.sh",
+            "rm -f /etc/logrotate.d/sentinella",
+            "rm -f /etc/bash_completion.d/sentinella",
+            "userdel sentinella"
+        ],
+        "preun": [
+            "/etc/init.d/sentinella stop 2>/dev/null >/dev/null || true",
+            "chkconfig --del sentinella || true"
+        ]
+    },
+    "file_extras": {
+        "files": [
+            "conf_redhat/etc/init.d/sentinella:etc/init.d/sentinella",
+            "conf_redhat/etc/profile.d/sentinella.sh:etc/profile.d/sentinella.sh",
+            "conf_redhat/etc/logrotate.d/sentinella:etc/logrotate.d/sentinella",
+            "conf_redhat/etc/bash_completion.d/sentinella:etc/bash_completion.d/sentinella",
+            "conf_redhat/usr/local/bin/sentinellad:usr/local/bin/sentinellad" 
+        ]
+    },
+    "file_permissions": {
+        "user": "root",
+        "group": "root",
+        "create_user": false,
+        "create_group": false
+    }
+}

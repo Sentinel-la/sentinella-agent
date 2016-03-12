@@ -1,30 +1,30 @@
 #!/bin/bash
 #
-# tourbillon service daemon init script.
+# sentinella service daemon init script.
 #
 # Copyright (C) 2015 The Tourbillon Team
 #
 #
 # chkconfig: 2345 20 80
-# description: Start/stop the tourbillon service daemon
+# description: Start/stop the sentinella service daemon
 
 ### BEGIN INIT INFO
-# Provides:	  tourbillon
+# Provides:	  sentinella
 # Required-Start:    $local_fs $remote_fs $network
 # Required-Stop:     $local_fs $remote_fs $network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts the tourbillon agent
-# Description:       starts the tourbillon agent using start-stop-daemon
+# Short-Description: starts the sentinella agent
+# Description:       starts the sentinella agent using start-stop-daemon
 ### END INIT INFO
 
 PATH=/usr/local/bin:/usr/bin:/sbin:/bin:/usr/sbin
 export PATH
 
 
-lockfile="/var/lock/subsys/tourbillon"
-pidfile="/var/run/tourbillon/tourbillon.pid"
-tourbillond="/usr/local/bin/tourbillond"
+lockfile="/var/lock/subsys/sentinella"
+pidfile="/var/run/sentinella/sentinella.pid"
+sentinellad="/usr/local/bin/sentinellad"
 RETVAL=0
 
 . /etc/init.d/functions
@@ -32,8 +32,8 @@ RETVAL=0
 
 
 start() {
-    echo -n $"Starting tourbillon agent: "
-    daemon --user tourbillon --pidfile $pidfile $tourbillond
+    echo -n $"Starting sentinella agent: "
+    daemon --user sentinella --pidfile $pidfile $sentinellad
     RETVAL=$?
     echo
         [ $RETVAL = 0 ] && touch ${lockfile}
@@ -41,8 +41,8 @@ start() {
 }
 
 stop() {
-    echo -n $"Stopping tourbillon agent: "
-    killproc -p $pidfile $tourbillond
+    echo -n $"Stopping sentinella agent: "
+    killproc -p $pidfile $sentinellad
     RETVAL=$?
     echo
     [ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
@@ -54,7 +54,7 @@ restart() {
 }
 
 rh_status() {
-    status -p $pidfile $tourbillond
+    status -p $pidfile $sentinellad
     RETVAL=$?
     return $RETVAL
 }

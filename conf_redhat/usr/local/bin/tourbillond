@@ -1,7 +1,0 @@
-#!/bin/bash
-#
-# tourbillon service daemon start script.
-#
-# Copyright (C) 2015 The Tourbillon Team
-#
-/usr/share/python/tourbillon/bin/tourbillon run &
