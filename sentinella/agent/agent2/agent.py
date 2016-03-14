@@ -44,6 +44,7 @@ class Tourbillon(object):
         self._loop = asyncio.get_event_loop()
         self._tasks = []
         self._pluginconfig = {}
+        self.agent_version = '0.3'
 
         with open(config_file, 'r') as f:
             self._config = json.load(f)
@@ -121,6 +122,7 @@ class Tourbillon(object):
         metrics['account_key'] = self._config['account_key']
         metrics['measurements'] = json.dumps(metrics['measurements'])
         metrics['specs'] = json.dumps(metrics['stats'])
+        metrics['specs']['agent_version'] = self.agent_version
         r = requests.post(self.api_url + '/metrics', json=metrics)
         logger.info('{}: - {} - push={}%'.format(metrics['server_name'], r.status_code, r.text))
         return

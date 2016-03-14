@@ -11,6 +11,8 @@ except ImportError:
 
 import click
 
+AGENT_VERSION = '0.3'
+
 PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 PY27 = sys.version_info[0] == 2 and sys.version_info[1] == 7
 
@@ -33,7 +35,7 @@ def get_index():
 
 
 @click.group()
-@click.version_option(version='0.2.4')
+@click.version_option(version=AGENT_VERSION)
 @click.option('--config',
               '-c',
               type=click.Path(exists=False,

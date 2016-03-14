@@ -1,4 +1,10 @@
-sentinella-agent (0.2.4) stable; urgency=medium
+sentinella-agent (0.3) stable; urgency=medium
+
+  * Added Agent Version in specs
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Mon, 14 Mar 2016 12:33:00 +0000
+
+sentinella-agent (0.3) stable; urgency=low
 
   * Added RPM compatibility
 
