@@ -66,7 +66,7 @@
             "conf_redhat/etc/logrotate.d/sentinella:etc/logrotate.d/sentinella",
             "conf_redhat/etc/bash_completion.d/sentinella:etc/bash_completion.d/sentinella",
             "conf_redhat/usr/local/bin/sentinellad:usr/local/bin/sentinellad",
-            "conf_redhat/etc/sentinella/*:etc/sentinella"
+            "conf_redhat/etc/sentinella/conf.d/*:etc/sentinella/conf.d/."
         ]
     },
     "file_permissions": {

@@ -7,3 +7,4 @@ dist/
 *ipynb*
 debian/pypi
 .vagrant
+*.swp
