@@ -39,22 +39,27 @@ def get_server_usage_stats(agent):
             cpu_percent = psutil.cpu_percent(interval=None)
             memory = psutil.virtual_memory()
             swap = psutil.swap_memory()
+            loadavg = os.getloadavg()
             
             data = {'server_name': hostname, 'measurements': [], 'stats':{'platform': {}, 'hardware': {}, 'openstack': {}}}
 
-            data['measurements'].append({'name': 'cpu.total', 'value': psutil.cpu_count()})
+            #data['measurements'].append({'name': 'cpu.total', 'value': psutil.cpu_count()})
             data['measurements'].append({'name': 'cpu.percent', 'value': cpu_percent})
 
-            data['measurements'].append({'name': 'memory.total', 'value': memory.total})
+            #data['measurements'].append({'name': 'memory.total', 'value': memory.total})
             data['measurements'].append({'name': 'memory.available', 'value': memory.available})
             data['measurements'].append({'name': 'memory.percent', 'value': memory.percent})
             data['measurements'].append({'name': 'memory.used', 'value': memory.used})
             data['measurements'].append({'name': 'memory.free', 'value': memory.free})
             
-            data['measurements'].append({'name': 'swap.total', 'value': swap.total})
+            #data['measurements'].append({'name': 'swap.total', 'value': swap.total})
             data['measurements'].append({'name': 'swap.used', 'value': swap.used})
             data['measurements'].append({'name': 'swap.free', 'value': swap.free})
             data['measurements'].append({'name': 'swap.percent', 'value': swap.percent})
+            
+            data['measurements'].append({'name': 'loadavg.1', 'value': loadavg[0]})
+            data['measurements'].append({'name': 'loadavg.5', 'value': loadavg[1]})
+            data['measurements'].append({'name': 'loadavg.15', 'value': loadavg[2]})
             
             curr_stats = psutil.disk_io_counters(perdisk=True)
             include_disks = None
@@ -109,12 +114,16 @@ def get_server_usage_stats(agent):
             cpu_hw = cpuinfo.get_cpu_info()
             
             data['stats']['platform']['processor'] = {}
+            data['stats']['platform']['processor']['qty'] = psutil.cpu_count()
             data['stats']['platform']['processor']['brand'] = cpuinfo.get_cpu_info()['brand']
             data['stats']['platform']['processor']['count'] = cpuinfo.get_cpu_info()['count']
             data['stats']['platform']['processor']['flags'] = cpuinfo.get_cpu_info()['flags']
             
             data['stats']['platform']['memory'] = {}
             data['stats']['platform']['memory']['total'] = memory.total
+            
+            data['stats']['platform']['swap'] = {}
+            data['stats']['platform']['swap']['total'] = swap.total
 
             p = subprocess.Popen(["nova-manage", "version"], stdout=subprocess.PIPE)
             version = p.communicate()[0]
@@ -127,20 +136,20 @@ def get_server_usage_stats(agent):
             processes_to_check = processes
             for p in psutil.process_iter():
                 try:                        
-                    if p.name() in processes:
+                    if p.name in processes:
 
                         if p.is_running():
                             is_running = 1
                         else:
                             is_running = 0
                         
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'cpu_percent', 'value': p.cpu_percent()})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'memory_percent', 'value': p.memory_percent()})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'num_threads', 'value': p.num_threads()})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'is_running', 'value': is_running})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'up', 'tags': {'status': p.status()} ,'value': 1})
+                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'cpu_percent', 'value': p.cpu_percent()})
+                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'memory_percent', 'value': p.memory_percent()})
+                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'num_threads', 'value': p.num_threads()})
+                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'is_running', 'value': is_running})
+                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'up', 'tags': {'status': p.status()} ,'value': 1})
                     
-                        processes_to_check.remove(p.name())
+                        processes_to_check.remove(p.name)
                 except psutil.Error:
                     pass
                 
