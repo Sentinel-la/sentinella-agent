@@ -106,6 +106,18 @@ def init(ctx):
         click.echo(click.style('You can configure sentinella later by running:\nsentinella init\n', fg='magenta'))
         sys.exit()
     
+    proxy = click.prompt('\nIf the server has no direct Internet connection you can configure a HTTPS proxy.\nDo you want to configure it now?', default='no', type=bool)
+    if proxy:
+        responses['proxy'] = {}
+        responses['proxy']['host'] = click.prompt('Enter your proxy host (ip or hostname)', show_default=False, default='')
+        responses['proxy']['port'] = click.prompt('Enter your proxy port', show_default=False, default='')
+        
+        proxy_use_password = click.prompt('\nDo you want to configure a proxy auth (user and password)?', default='no', type=bool)
+        
+        if proxy_use_password:
+            responses['proxy']['user'] = click.prompt('Enter your proxy host (ip or hostname)', show_default=False, default='')
+            responses['proxy']['password'] = click.prompt('Enter your proxy port', hide_input=True, confirmation_prompt=True, default='')
+    
     click.echo(click.style('\nOpenStack configuration\n',
                            fg='magenta', underline=True))
     

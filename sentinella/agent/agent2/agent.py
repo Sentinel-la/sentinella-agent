@@ -73,6 +73,25 @@ class Tourbillon(object):
         for key, value in self._config['openstack_services'].iteritems():
             if value:
                 self.processes.append(value['process'])
+                
+        if 'proxy' in self._config and 'host' in self._config['proxy'] and self._config['proxy']['host'] <> '':
+            proxy_uri = 'https://'
+            if 'user' in self._config['proxy'] and self._config['proxy']['user'] <> '':
+                proxy_uri += '%s' % (self._config['proxy']['user'])
+                
+                if 'password' in self._config['proxy'] and self._config['proxy']['password'] <> '':
+                    proxy_uri += ':%s' % (self._config['proxy']['password'])
+                    
+                proxy_uri += '@%s' % (self._config['proxy']['host'])
+                
+            if 'port' in self._config['proxy'] and self._config['proxy']['port'] <> '':
+                proxy_uri += ':%i' % (self._config['proxy']['port'])
+                
+            proxy_uri += '/'
+
+            self.proxy = {'https': proxy_uri}
+        else:
+            self.proxy = {}
         
         print self.api_url
 
@@ -113,7 +132,7 @@ class Tourbillon(object):
     def push_log(self, log):
         """write syncronously log to Sentinel.la API"""
         log['account_key'] = self._config['account_key']
-        r = requests.post(self.api_url + '/logs', json=log)
+        r = requests.post(self.api_url + '/logs', json=log, proxies=self.proxy)
         logger.info('{}: - {} - push_log={}%'.format(log['component'], r.status_code, log))
         return
 
@@ -123,7 +142,7 @@ class Tourbillon(object):
         metrics['measurements'] = json.dumps(metrics['measurements'])
         metrics['stats']['agent_version'] = self.agent_version
         metrics['specs'] = json.dumps(metrics['stats'])
-        r = requests.post(self.api_url + '/metrics', json=metrics)
+        r = requests.post(self.api_url + '/metrics', json=metrics, proxies=self.proxy)
         logger.info('{}: - {} - push={}%'.format(metrics['server_name'], r.status_code, r.text))
         return
 
