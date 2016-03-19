@@ -82,10 +82,12 @@ class Tourbillon(object):
                 if 'password' in self._config['proxy'] and self._config['proxy']['password'] <> '':
                     proxy_uri += ':%s' % (self._config['proxy']['password'])
                     
-                proxy_uri += '@%s' % (self._config['proxy']['host'])
+                proxy_uri += '@'
+                    
+            proxy_uri += '%s' % (self._config['proxy']['host'])
                 
             if 'port' in self._config['proxy'] and self._config['proxy']['port'] <> '':
-                proxy_uri += ':%i' % (self._config['proxy']['port'])
+                proxy_uri += ':%s' % (self._config['proxy']['port'])
                 
             proxy_uri += '/'
 

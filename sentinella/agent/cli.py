@@ -107,16 +107,17 @@ def init(ctx):
         sys.exit()
     
     proxy = click.prompt('\nIf the server has no direct Internet connection you can configure a HTTPS proxy.\nDo you want to configure it now?', default='no', type=bool)
-    if proxy:
+
+    if proxy is True:
         responses['proxy'] = {}
         responses['proxy']['host'] = click.prompt('Enter your proxy host (ip or hostname)', show_default=False, default='')
         responses['proxy']['port'] = click.prompt('Enter your proxy port', show_default=False, default='')
         
-        proxy_use_password = click.prompt('\nDo you want to configure a proxy auth (user and password)?', default='no', type=bool)
+        proxy_use_password = click.prompt('\nDo you want to configure proxy auth (user and password)?', default='no', type=bool)
         
-        if proxy_use_password:
-            responses['proxy']['user'] = click.prompt('Enter your proxy host (ip or hostname)', show_default=False, default='')
-            responses['proxy']['password'] = click.prompt('Enter your proxy port', hide_input=True, confirmation_prompt=True, default='')
+        if proxy_use_password is True:
+            responses['proxy']['user'] = click.prompt('Enter your proxy auth user', show_default=False, default='')
+            responses['proxy']['password'] = click.prompt('Enter your proxy auth password', hide_input=True, confirmation_prompt=True, default='')
     
     click.echo(click.style('\nOpenStack configuration\n',
                            fg='magenta', underline=True))
