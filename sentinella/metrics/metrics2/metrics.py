@@ -136,7 +136,7 @@ def get_server_usage_stats(agent):
             processes_to_check = processes
             for p in psutil.process_iter():
                 try:                        
-                    if p.name in processes:
+                    if p.name in processes_to_check:
 
                         if p.is_running():
                             is_running = 1
@@ -147,7 +147,14 @@ def get_server_usage_stats(agent):
                         data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'memory_percent', 'value': p.memory_percent()})
                         data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'num_threads', 'value': p.num_threads()})
                         data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'is_running', 'value': is_running})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'up', 'tags': {'status': p.status()} ,'value': 1})
+                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'create_time', 'value': create_time})
+                        
+                        if p.is_running() and p.status != psutil.STATUS_ZOMBIE:
+                            process_status = 1
+                        else:
+                            process_status = 0
+                            
+                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'up', 'tags': {'status': p.status()} ,'value': process_status})
                     
                         processes_to_check.remove(p.name)
                 except psutil.Error:

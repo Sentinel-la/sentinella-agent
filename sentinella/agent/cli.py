@@ -78,7 +78,7 @@ def init(ctx):
                              {'neutron-dhcp-agent': {'process': 'neutron-dhcp-agent', 'log': '/var/log/neutron/dhcp-agent.log'}},
                              {'neutron-openvswitch-agent': {'process': 'neutron-openvswitch-agent', 'log': '/var/log/neutron/openvswitch-agent.log'}},
                              {'neutron-l3-agent': {'process': 'neutron-openvswitch-agent', 'log': '/var/log/neutron/l3-agent.log'}},
-                             {'neutron-metadata-agent': {'process': 'neutron-metadata-agent', 'log': '/var/log/neutron/metadata-agent.log '}}
+                             {'neutron-metadata-agent': {'process': 'neutron-metadata-agent', 'log': '/var/log/neutron/metadata-agent.log'}}
                         ]}
                 ]
     
@@ -89,7 +89,7 @@ def init(ctx):
                  'plugins_conf_dir': '/etc/sentinella/conf.d',
                  'openstack_services': {}, 'openstack_credentials': {},
                  'plugins': {'sentinella.metrics': ['get_server_usage_stats'],
-                             'sentinella.openstack_logs': ['get_logfile_metrics']}}
+                             'sentinella.openstack_logs': ['get_openstack_events']}}
 
     click.echo(click.style('\nSentinel.la agent configuration\n',
                            fg='blue', bold=True, underline=True))

@@ -17,8 +17,8 @@ def get_openstack_events(agent):
         def __init__(self, agent):
             super(TailFile, self).__init__()
             self.agent = agent
-            self.config = agent.config['log']
-            self.filenames = list(set([agent._config['openstack_services'][service]['log'] for service in agent._config['openstack_services'] if agent._config['openstack_services'][service] is not False and agent._config['openstack_services'][service] != '']))
+            self.config = agent.config['openstack_logs']
+            self.filenames = list(set([agent._config['openstack_services'][service]['log'].strip() for service in agent._config['openstack_services'] if agent._config['openstack_services'][service] is not False and agent._config['openstack_services'][service] != '']))
             self.regex = self.config['parser']['regex']
             self.allowed_events = ['CRITICAL', 'WARNING', 'ERROR']
             self.hostname = os.uname()[1].split('.')[0]
@@ -36,7 +36,7 @@ def get_openstack_events(agent):
                     self.f[filename] = open(filename, 'r')
                     self.f[filename].seek(0, 2)
                 else:
-                    logger.info('get_openstack_events: file '+filename+' doesn\'t exist')
+                    logger.info('get_openstack_events: file "%s" doesn\'t exist, is the filename correct?', filename)
                 if is_link:
                     symlink = os.readlink(filename)
                     self.filenames_ln.append(symlink)
@@ -70,14 +70,16 @@ def get_openstack_events(agent):
                             if log_line['level'] in self.allowed_events:
                                 log_line['server_name'] = self.hostname
                                 log_line['service_name'] = service_name
-                                print log_line
+                                logger.debug(log_line)
                                 self.agent.push_log(log_line)
                     except Exception, e:
                         logger.exception('cannot parse log line : ' + line)
 
     agent.run_event.wait()
-    config = agent.config['log']
-    
+
+
+    config = agent.config['openstack_logs']
+
     filenames = list(set([agent._config['openstack_services'][service]['log'] for service in agent._config['openstack_services'] if agent._config['openstack_services'][service] is not False and agent._config['openstack_services'][service] != '']))
     directories = list(set([os.path.dirname(filename) for filename in filenames]))
 
@@ -103,4 +105,4 @@ def get_openstack_events(agent):
         observer[directory].stop()
         observer[directory].join()
 
-    logger.info('get_logfile_metrics terminated')
+    logger.info('get_openstack_events terminated')

@@ -1,31 +1,68 @@
 {
-  "database": {
-    "database": "celery",
-    "host": "jimi",
-    "port": 8086
-  },
-  "log_format": "%(asctime)s %(levelname)s [%(name)s %(filename)s:%(funcName)s:%(lineno)d] %(message)s",
-  "log_level": "DEBUG",
-  "plugins": {
-    "tourbillon.celery": [
-      "get_celery_stats"
-    ],
-    "tourbillon.linux": [
-      "get_cpu_usage",
-      "get_memory_usage"
-    ],
-    "tourbillon.log": [
-      "get_logfile_metrics"
-    ],
-    "tourbillon.nginx": [
-      "get_nginx_status"
-    ],
-    "tourbillon.sea": [
-      "get_matw_stats"
-    ],
-    "tourbillon.uwsgi": [
-      "get_uwsgi_stats"
-    ]
-  },
-  "plugins_conf_dir": "${tourbillon_conf_dir}/conf.d"
+    "log_level": "INFO",
+    "api_url": "https://api.sentinel.la",
+    "openstack_credentials": {
+        "project": "",
+        "password": "",
+        "auth_url": "",
+        "user": ""
+    },
+    "plugins": {
+        "sentinella.openstack_logs": [
+            "get_openstack_events"
+        ],
+        "sentinella.metrics": [
+            "get_server_usage_stats"
+        ]
+    },
+    "log_format": "",
+    "log_file": "/var/log/sentinella/sentinella.log",
+    "plugins_conf_dir": "/etc/sentinella/conf.d",
+    "account_key": "",
+    "openstack_services": {
+        "nova-novncproxy": {
+            "process": "nova-novncproxy",
+            "log": "/var/log/nova/nova-novncproxy.log"
+        },
+        "nova-cert": {
+            "process": "nova-cert",
+            "log": "/var/log/nova/nova-cert.log"
+        },
+        "nova-compute": {
+            "process": "nova-compute",
+            "log": "/var/log/nova/nova-compute.log"
+        },
+        "nova-conductor": {
+            "process": "nova-conductor",
+            "log": "/var/log/nova/nova-conductor.log"
+        },
+        "nova-api": {
+            "process": "nova-api",
+            "log": "/var/log/nova/nova-api.log"
+        },
+        "neutron-openvswitch-agent": {
+            "process": "neutron-openvswitch-agent",
+            "log": "/var/log/neutron/openvswitch-agent.log"
+        },
+        "neutron-l3-agent": {
+            "process": "neutron-openvswitch-agent",
+            "log": "/var/log/neutron/l3-agent.log"
+        },
+        "neutron-dhcp-agent": {
+            "process": "neutron-dhcp-agent",
+            "log": "/var/log/neutron/dhcp-agent.log"
+        },
+        "nova-scheduler": {
+            "process": "nova-scheduler",
+            "log": "/var/log/nova/nova-scheduler.log"
+        },
+        "neutron-server": {
+            "process": "neutron-server",
+            "log": "/var/log/neutron/server.log"
+        },
+        "neutron-metadata-agent": {
+            "process": "neutron-metadata-agent",
+            "log": "/var/log/neutron/metadata-agent.log"
+        }
+    }
 }
