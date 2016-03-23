@@ -28,7 +28,7 @@
         "post": [
             "if ! grep -q sentinella /etc/passwd; then",
             "    groupadd -r sentinella",
-            "    adduser --shell /sbin/nologin -r -g sentinella sentinella",
+            "    adduser -r -g sentinella sentinella",
             "fi",
             "mkdir /var/log/sentinella",
             "mkdir /var/run/sentinella",
