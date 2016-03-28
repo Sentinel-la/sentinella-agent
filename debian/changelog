@@ -1,3 +1,9 @@
+sentinella-agent (0.4.1) stable; urgency=low
+
+  * Fixed OpenStack version collection
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Wed, 23 Mar 2016 23:12:00 +0000
+
 sentinella-agent (0.4) stable; urgency=low
 
   * Added Proxy HTTPS support, fixed minor bugs
