@@ -1,0 +1,8 @@
+/var/log/sentinella/*.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        notifempty
+        create 644 sentinella sentinella
+}

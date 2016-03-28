@@ -1,0 +1,111 @@
+#!/bin/sh
+#
+# sentinella service daemon init script.
+#
+# Copyright (C) 2015 The Tourbillon Team
+#
+
+
+### BEGIN INIT INFO
+# Provides:	  sentinella
+# Required-Start:    $local_fs $remote_fs $network
+# Required-Stop:     $local_fs $remote_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the sentinella agent
+# Description:       starts the sentinella agent using start-stop-daemon
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/share/python/sentinella/bin
+DAEMON=/usr/share/python/sentinella/bin/sentinella
+NAME=sentinella
+DESC=service
+PID=/var/run/sentinella/sentinella.pid
+DAEMON_OPTS=run
+STOP_SCHEDULE="${STOP_SCHEDULE:-QUIT/5/TERM/5/KILL/5}"
+
+. /lib/lsb/init-functions
+
+test -x $DAEMON || exit 0
+
+
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	start-stop-daemon --start --quiet --pidfile $PID --chuid sentinella --exec $DAEMON --test > /dev/null \
+		|| return 1
+	start-stop-daemon --start --background --quiet --pidfile $PID --chuid sentinella --exec $DAEMON -- \
+		$DAEMON_OPTS 2>/dev/null \
+		|| return 2
+}
+
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	#   other if a failure occurred
+	start-stop-daemon --stop --quiet --retry=$STOP_SCHEDULE --pidfile $PID --name $NAME
+	RETVAL="$?"
+
+	sleep 1
+	return "$RETVAL"
+}
+
+
+case "$1" in
+	start)
+		[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+		do_start
+		case "$?" in
+			0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+			2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+		esac
+		;;
+	stop)
+		[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+		do_stop
+		case "$?" in
+			0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+			2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+		esac
+		;;
+	restart)
+		log_daemon_msg "Restarting $DESC" "$NAME"
+
+
+		do_stop
+		case "$?" in
+			0|1)
+				do_start
+				case "$?" in
+					0) log_end_msg 0 ;;
+					1) log_end_msg 1 ;; # Old process is still running
+					*) log_end_msg 1 ;; # Failed to start
+				esac
+				;;
+			*)
+				# Failed to stop
+				log_end_msg 1
+				;;
+		esac
+		;;
+	status)
+		status_of_proc -p $PID "$DAEMON" "$NAME" && exit 0 || exit $?
+		;;
+	rotate)
+		log_daemon_msg "Re-opening $DESC log files" "$NAME"
+		do_rotate
+		log_end_msg $?
+		;;
+	*)
+		echo "Usage: $NAME {start|stop|restart}" >&2
+		exit 3
+		;;
+esac
+
+:
