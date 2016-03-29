@@ -36,7 +36,7 @@ def get_openstack_events(agent):
                     self.f[filename] = open(filename, 'r')
                     self.f[filename].seek(0, 2)
                 else:
-                    logger.info('get_openstack_events: file "%s" doesn\'t exist, is the filename correct?', filename)
+                    logger.info('get_openstack_events: couldn\'t read file "%s" , are the filename/permissions correct?', filename)
                 if is_link:
                     symlink = os.readlink(filename)
                     self.filenames_ln.append(symlink)
@@ -96,7 +96,7 @@ def get_openstack_events(agent):
             except Exception, e:
                 logger.info(e)
         else:
-            logger.info('get_openstack_events: directory '+directory+' doesn\'t exist')
+            logger.info('get_openstack_events: couldn\'t read directory '+directory+' , are the directory name/permissions correct?')
 
     while agent.run_event.is_set():
         time.sleep(1)

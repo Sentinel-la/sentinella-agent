@@ -1,3 +1,9 @@
+sentinella-agent (0.4.2) stable; urgency=low
+
+  * Improved OpenStack processes detection
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Tue, 29 Mar 2016 16:51:00 +0000
+
 sentinella-agent (0.4.1) stable; urgency=low
 
   * Fixed OpenStack version collection

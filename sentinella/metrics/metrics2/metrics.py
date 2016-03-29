@@ -133,35 +133,65 @@ def get_server_usage_stats(agent):
 
             # OpenStack processes
             processes = agent.processes
-            processes_to_check = processes
-            for p in psutil.process_iter():
-                try:                        
-                    if p.name in processes_to_check:
+            processes_to_check = list(set(processes))
 
-                        if p.is_running():
-                            is_running = 1
+            for process in processes_to_check:
+                try:
+                    proc = filter(lambda pr: pr.name() in process, psutil.process_iter())
+                    if len(proc) > 0:
+                        up = False
+                        cpu_percent = 0
+                        memory_percent = 0
+                        num_processes = len(proc)
+                        for p in proc:
+                            if p.is_running() and p.status() != psutil.STATUS_ZOMBIE:
+                                up = True
+                                cpu_percent += p.cpu_percent()
+                                memory_percent += p.memory_percent()
+                                break
+                        #print p.name(),p.pid, p.num_threads(), p.is_running(), p.status()
+                        if up is True:
+                            data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'up' ,'value': 1})
+                            data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'cpu_percent', 'value': float(cpu_percent/num_processes)})
+                            data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'memory_percent', 'value': float(memory_percent/num_processes)})
+                            data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'num_processes', 'value': num_processes})
                         else:
-                            is_running = 0
-                        
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'cpu_percent', 'value': p.cpu_percent()})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'memory_percent', 'value': p.memory_percent()})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'num_threads', 'value': p.num_threads()})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'is_running', 'value': is_running})
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'create_time', 'value': create_time})
-                        
-                        if p.is_running() and p.status != psutil.STATUS_ZOMBIE:
-                            process_status = 1
-                        else:
-                            process_status = 0
-                            
-                        data['measurements'].append({'name': 'openstack.processes.'+p.name+'.'+'up', 'tags': {'status': p.status()} ,'value': process_status})
-                    
-                        processes_to_check.remove(p.name)
-                except psutil.Error:
-                    pass
-                
+                            data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'up' ,'value': 0})
+                    else:
+                        data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'up', 'value': 0})
+                except Exception, e:
+                    logger.exception('cannot get info from process : ' + process)
+                    data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'up', 'value': 0})
+            print data['measurements']
+            '''            
+            process = filter(lambda p: p.name in "neutron-dhcp-agent", psutil.process_iter())
+            for i in process:
+              print i.name,i.pid
+            '''
+            '''
+            for p in psutil.process_iter():
+                if p.name() in processes_to_check:
+                    if p.is_running():
+                        is_running = 1
+                    else:
+                        is_running = 0
+
+                    data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'cpu_percent', 'value': p.cpu_percent()})
+                    data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'memory_percent', 'value': p.memory_percent()})
+                    data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'num_threads', 'value': p.num_threads()})
+                    data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'is_running', 'value': is_running})
+                    data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'create_time', 'value': p.create_time()})
+
+                    if p.is_running() and p.status() != psutil.STATUS_ZOMBIE:
+                        process_status = 1
+                    else:
+                        process_status = 0
+
+                    data['measurements'].append({'name': 'openstack.processes.'+p.name()+'.'+'up', 'tags': {'status': p.status()} ,'value': process_status})
+
             for process in processes_to_check:
                 data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'up', 'tags': {'status': 'down'}, 'value': 0})
+            '''
 
             # OpenStack Nova API
             if agent._config['openstack_credentials']['user'] and agent._config['openstack_credentials']['password'] and agent._config['openstack_credentials']['project'] and agent._config['openstack_credentials']['auth_url']:
