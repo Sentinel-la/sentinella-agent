@@ -10,7 +10,7 @@
 	"sentinella-ceph":	{
 		"version": "0.1",
 		"description": "Sentinel.la Ceph plugin",
-		"author": "Alvaro Sotoi <alsotoes@gmail.com>",
+		"author": "Alvaro Soto <alsotoes@gmail.com>",
 		"featured": true,
 		"py2": true,
 		"py3": false

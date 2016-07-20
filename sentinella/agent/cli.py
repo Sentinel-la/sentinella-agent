@@ -22,7 +22,7 @@ LOG_FORMAT_NO = '%(asctime)s %(levelname)s %(message)s'
 LOG_FILENAME = '/var/log/sentinella/sentinella.log'
 
 INDEX_FILE_URL = 'https://raw.githubusercontent.com/Sentinel-la/'\
-    'sentinella-agent-plugins/master/plugin_index.json'
+    'sentinella-agent/master/meta/plugin_index.json'
 
 def get_index():
     data = urlopen(INDEX_FILE_URL).read()
