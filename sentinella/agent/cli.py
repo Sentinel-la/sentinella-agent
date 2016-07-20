@@ -11,7 +11,7 @@ except ImportError:
 
 import click
 
-AGENT_VERSION = '0.4.3'
+AGENT_VERSION = '0.4.4'
 
 PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 PY27 = sys.version_info[0] == 2 and sys.version_info[1] == 7
