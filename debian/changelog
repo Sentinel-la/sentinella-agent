@@ -1,3 +1,9 @@
+sentinella-agent (0.4.3) stable; urgency=low
+
+  * Support for both versions of psutil, improved net io counters
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Tue, 20 Jul 2016 16:20:00 +0000
+
 sentinella-agent (0.4.2) stable; urgency=low
 
   * Improved OpenStack processes detection
