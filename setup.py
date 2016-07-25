@@ -7,17 +7,21 @@ PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 exclude = ['sentinella.agent.agent2'
            if PY34_PLUS else 'sentinella.agent.agent']
 
-install_requires = ['click==5.1',
-                    'requests==2.9.1',
-                    'requestsexceptions==1.1.1',
-                    'pip==7.1.2',
-                    'simplejson==3.8.1',
-                    'python-novaclient==3.1.0', 
-                    'python-neutronclient==3.1.0', 
-                    'py-cpuinfo==0.1.8', 
-                    'psutil==3.1.1', 
-                    'watchdog==0.8.3'
-                    ]
+install_requires = ['setuptools>=25.1.0',
+		    'click==5.1',
+		    'trollius==2.0',
+		    'pip==8.1.2',
+		    'requests==2.10.0',
+		    'requestsexceptions==1.1.1',
+		    'simplejson==3.8.1',
+		    'python-novaclient==5.0.0',
+		    'python-neutronclient==4.2.0',
+		    'py-cpuinfo==0.1.8',
+		    'psutil==3.1.1',
+		    'watchdog==0.8.3',
+		    'pbr==1.10.0',
+		    'mock==1.0.1',
+		    'dnspython==1.11.1']
 
 if not PY34_PLUS:
     install_requires.append('trollius==2.0')
