@@ -2,7 +2,7 @@
 *.sublime-*
 __pycache__/
 build/
-dist/
+dist/*
 *.egg-info/
 *ipynb*
 debian/pypi
