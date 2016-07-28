@@ -1,6 +1,6 @@
 { 
 	"sentinella-libvirt": {
-		"version": "0.1",
+		"version": "0.1.1",
 		"description": "Sentinel.la Libvirt plugin",
 		"author": "The Sentinel.la Team",
 		"featured": true,
