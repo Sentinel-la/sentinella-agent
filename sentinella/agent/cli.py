@@ -11,7 +11,7 @@ except ImportError:
 
 import click
 
-AGENT_VERSION = '0.4.4'
+AGENT_VERSION = '0.5'
 
 PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 PY27 = sys.version_info[0] == 2 and sys.version_info[1] == 7
@@ -268,9 +268,13 @@ def reinstall(ctx, plugin):
 @click.pass_context
 def show(ctx):
     """show the list of enabled plugins"""
-    config_file = ctx.parent.params['config']
-    with open(config_file, 'r') as f:
-        config = json.load(f)
+    try:
+        config_file = ctx.parent.params['config']
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+    except Exception, e:
+        click.echo('Invalid config: check permissions and/or if the config contains valid JSON')
+        return
 
     if 'plugins' not in config:
         click.echo('no enabled plugins')
@@ -285,9 +289,13 @@ def show(ctx):
 @click.pass_context
 def clear(ctx):
     """remove all plugins from configuration"""
-    config_file = ctx.parent.params['config']
-    with open(config_file, 'r') as f:
-        config = json.load(f)
+    try:
+        config_file = ctx.parent.params['config']
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+    except Exception, e:
+        click.echo('Invalid config: check permissions and/or if the config contains valid JSON')
+        return
 
     if 'plugins' in config:
         del config['plugins']
@@ -325,9 +333,13 @@ Example:
 Enable the function get_server_usage of the
 'sentinella.metrics' plugin.
     """
-    config_file = ctx.parent.params['config']
-    with open(config_file, 'r') as f:
-        config = json.load(f)
+    try:
+        config_file = ctx.parent.params['config']
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+    except Exception, e:
+        click.echo('Invalid config: check permissions and/or if the config contains valid JSON')
+        return
     if 'plugins' not in config:
         config['plugins'] = {}
 
@@ -370,9 +382,13 @@ Example:
 Disable the function get_server_usage of the
 'sentinella.metrics' plugin
     """
-    config_file = ctx.parent.params['config']
-    with open(config_file, 'r') as f:
-        config = json.load(f)
+    try:
+        config_file = ctx.parent.params['config']
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+    except Exception, e:
+        click.echo('Invalid config: check permissions and/or if the config contains valid JSON')
+        return
     if 'plugins' not in config:
         return
 

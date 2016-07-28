@@ -44,7 +44,7 @@ class Tourbillon(object):
         self._loop = asyncio.get_event_loop()
         self._tasks = []
         self._pluginconfig = {}
-        self.agent_version = '0.4.4'
+        self.agent_version = '0.5'
 
         with open(config_file, 'r') as f:
             self._config = json.load(f)
@@ -67,7 +67,7 @@ class Tourbillon(object):
         self.nova_api_version = 2
         self.openstack_status = {'STOPPED': 0, 'ACTIVE': 1, 'SHUTOFF': 2, 'BUILDING': 3, 'DELETED': 4, 'ERROR': 5,
                                  'SOFT_DELETED': 6, 'PAUSED': 7, 'SUSPEND': 8, 'SHELVED': 9, 'RESCUED': 10, 'RESIZED': 11,
-                                 'SHELVED_OFFLOADED': 12}
+                                 'SHELVED_OFFLOADED': 12, 'BUILD': 13}
 
         self.processes = []
         for key, value in self._config['openstack_services'].iteritems():

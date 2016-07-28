@@ -132,11 +132,14 @@ def get_server_usage_stats(agent):
             data['stats']['platform']['swap'] = {}
             data['stats']['platform']['swap']['total'] = swap.total
 
-            p = subprocess.Popen(["nova-manage", "version"], stdout=subprocess.PIPE)
-            version = p.communicate()[0]
+            try:
+                p = subprocess.Popen(["nova-manage", "version"], stdout=subprocess.PIPE)
+                version = p.communicate()[0]
 
-            if version:
-                data['stats']['openstack']['version'] = version.strip()
+                if version:
+                    data['stats']['openstack']['version'] = version.strip()
+            except Exception, e:
+                pass
 
             # OpenStack processes
             processes = agent.processes
@@ -179,51 +182,67 @@ def get_server_usage_stats(agent):
 
                 if nova:
                     #nova services
-                    services = nova.services.list()
+                    try:
+                        services = nova.services.list()
 
-                    for service in services:
-                        status = 1 if service.state == 'up' else 0
-                        data['measurements'].append({'name': 'openstack.nova-api.services.'+service.binary+'.'+'status', 'value': status})
+                        for service in services:
+                            status = 1 if service.state == 'up' else 0
+                            data['measurements'].append({'name': 'openstack.nova-api.services.'+service.binary+'.'+'status', 'value': status})
+                    except Exception, e:
+                        pass
 
                     #availability zones
-                    avalability_zones = nova.availability_zones.list(True)
-                    for availability_zone in avalability_zones:
-                        status = 1 if availability_zone.zoneState['available'] is True else 0
-                        data['measurements'].append({'name': 'openstack.nova-api.avalability_zones.status', 'tags': {'availability_zone': availability_zone.zoneName}, 'value': status})
+                    try:
+                        avalability_zones = nova.availability_zones.list(True)
+                        for availability_zone in avalability_zones:
+                            status = 1 if availability_zone.zoneState['available'] is True else 0
+                            data['measurements'].append({'name': 'openstack.nova-api.avalability_zones.status', 'tags': {'availability_zone': availability_zone.zoneName}, 'value': status})
+                    except Exception, e:
+                        pass
                     
                     #hypervisor stats
                     hypervisor_keys = {'count', 'current_workload', 'disk_available_least', 'free_disk_gb', 'free_ram_mb', 'local_gb', 'local_gb_used', 'memory_mb', 'memory_mb_used', 'running_vms', 'vcpus', 'vcpus_used'}
-                    stats = nova.hypervisor_stats.statistics()
+                    try:
+                        stats = nova.hypervisor_stats.statistics()
 
-                    for key_name in hypervisor_keys:
-                        if hasattr(stats, key_name):
-                            data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.'+key_name, 'value': getattr(stats, key_name)})
+                        for key_name in hypervisor_keys:
+                            if hasattr(stats, key_name):
+                                data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.'+key_name, 'value': getattr(stats, key_name)})
 
-                    if hasattr(stats, 'vcpus') and hasattr(stats, 'vcpus_used'):
-                        data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.vcpus_percent', 'value': round(100 * float(stats.vcpus_used)/float(stats.vcpus), 2)})
+                        if hasattr(stats, 'vcpus') and hasattr(stats, 'vcpus_used'):
+                            data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.vcpus_percent', 'value': round(100 * float(stats.vcpus_used)/float(stats.vcpus), 2)})
 
-                    if hasattr(stats, 'local_gb') and hasattr(stats, 'local_gb_used'):
-                        data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.local_gb_percent', 'value': round(100 * float(stats.local_gb_used)/float(stats.local_gb), 2)})
+                        if hasattr(stats, 'local_gb') and hasattr(stats, 'local_gb_used'):
+                            data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.local_gb_percent', 'value': round(100 * float(stats.local_gb_used)/float(stats.local_gb), 2)})
 
-                    if hasattr(stats, 'memory_mb') and hasattr(stats, 'memory_mb_used'):
-                        data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.memory_mb_percent', 'value': round(100 * float(stats.memory_mb_used)/float(stats.memory_mb), 2)})
+                        if hasattr(stats, 'memory_mb') and hasattr(stats, 'memory_mb_used'):
+                            data['measurements'].append({'name': 'openstack.nova-api.hypervisor_total.memory_mb_percent', 'value': round(100 * float(stats.memory_mb_used)/float(stats.memory_mb), 2)})
+                    except Exception, e:
+                        pass
 
                     #server stats
-                    servers = nova.servers.list()
-                    for server in servers:
-                        value = agent.openstack_status[server.status]
-                        if not value:
-                            value = -1
-                        data['measurements'].append({'name': 'openstack.nova-api.servers', 'tags': {'name': server.name, 'id': server.id, 'tenant_id': server.tenant_id, 'status': server.status}, 'value': value})
+                    try: 
+                        servers = nova.servers.list()
+                        
+                        for server in servers:
+                            value = agent.openstack_status[server.status]
+                            if not value:
+                                value = -1
+                            data['measurements'].append({'name': 'openstack.nova-api.servers', 'tags': {'name': server.name, 'id': server.id, 'tenant_id': server.tenant_id, 'status': server.status}, 'value': value})
+                    except Exception, e:
+                        pass
 
                     #hypervisor specific stats
                     hypervisor_keys = {'current_workload', 'disk_available_least', 'free_disk_gb', 'free_ram_mb', 'local_gb', 'local_gb_used', 'memory_mb', 'memory_mb_used', 'running_vms', 'vcpus', 'vcpus_used'}
-                    hypervisors = nova.hypervisors.list()
-                    for hypervisor in hypervisors:
-                        if hypervisor.status == 'enabled':
-                            for key_name in hypervisor_keys:
-                                if hasattr(hypervisor, key_name):
-                                    data['measurements'].append({'name': 'openstack.nova-api.hypervisors.'+availability_zone.zoneName, 'tags': {'hypervisor': hypervisor.hypervisor_hostname, 'name': key_name}, 'value': getattr(stats, key_name)})
+                    try: 
+                        hypervisors = nova.hypervisors.list()
+                        for hypervisor in hypervisors:
+                            if hypervisor.status == 'enabled':
+                                for key_name in hypervisor_keys:
+                                    if hasattr(hypervisor, key_name):
+                                        data['measurements'].append({'name': 'openstack.nova-api.hypervisors.'+availability_zone.zoneName, 'tags': {'hypervisor': hypervisor.hypervisor_hostname, 'name': key_name}, 'value': getattr(stats, key_name)})
+                    except Exception, e:
+                        pass
 
             logger.debug('{}: server_usage={}%'.format(hostname, data))
             yield From(agent.async_push(data))
