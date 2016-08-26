@@ -103,14 +103,94 @@ def get_server_usage_stats(agent):
                 except:
                     prev = 0
 
-                data['measurements'].append({'name': 'net_io.bytes_sent', 'tags': {'interface': interface}, 'value': curr.bytes_sent - prev.bytes_sent})
-                data['measurements'].append({'name': 'net_io.bytes_recv', 'tags': {'interface': interface}, 'value': curr.bytes_recv - prev.bytes_recv})
-                data['measurements'].append({'name': 'net_io.packets_sent', 'tags': {'interface': interface}, 'value': curr.packets_sent - prev.packets_sent})
-                data['measurements'].append({'name': 'net_io.packets_recv', 'tags': {'interface': interface}, 'value': curr.packets_recv - prev.packets_recv})
-                data['measurements'].append({'name': 'net_io.errin', 'tags': {'interface': interface}, 'value': curr.errin - prev.errin})
-                data['measurements'].append({'name': 'net_io.errout', 'tags': {'interface': interface}, 'value': curr.errout - prev.errout})
-                data['measurements'].append({'name': 'net_io.dropin', 'tags': {'interface': interface}, 'value': curr.dropin - prev.dropin})
-                data['measurements'].append({'name': 'net_io.dropout', 'tags': {'interface': interface}, 'value': curr.dropout - prev.dropout})
+                if curr and hasattr(curr, 'bytes_sent'):
+                    curr_bytes_sent = curr.bytes_sent
+                else:
+                    curr_bytes_sent = 0
+
+                if curr and hasattr(curr, 'bytes_recv'):
+                    curr_bytes_recv = curr.bytes_recv
+                else:
+                    curr_bytes_recv = 0
+
+                if prev and hasattr(prev, 'bytes_sent'):
+                    prev_bytes_sent = prev.bytes_sent
+                else:
+                    prev_bytes_sent = 0
+
+                if prev and hasattr(prev, 'bytes_recv'):
+                    prev_bytes_recv = prev.bytes_recv
+                else:
+                    prev_bytes_recv = 0
+
+                if curr and hasattr(curr, 'packets_sent'):
+                    curr_packets_sent = curr.packets_sent
+                else:
+                    curr_packets_sent = 0
+
+                if curr and hasattr(curr, 'packets_recv'):
+                    curr_packets_recv = curr.packets_recv
+                else:
+                    curr_packets_recv = 0
+
+                if prev and hasattr(prev, 'packets_sent'):
+                    prev_packets_sent = prev.packets_sent
+                else:
+                    prev_packets_sent = 0
+
+                if prev and hasattr(prev, 'packets_recv'):
+                    prev_packets_recv = prev.packets_recv
+                else:
+                    prev_packets_recv = 0
+
+                if curr and hasattr(curr, 'errin'):
+                    curr_errin = curr.errin
+                else:
+                    curr_errin = 0
+
+                if curr and hasattr(curr, 'errout'):
+                    curr_errout = curr.errout
+                else:
+                    curr_errout = 0
+
+                if prev and hasattr(prev, 'errin'):
+                    prev_errin = prev.errin
+                else:
+                    prev_errin = 0
+
+                if prev and hasattr(prev, 'errout'):
+                    prev_errout = prev.errout
+                else:
+                    prev_errout = 0
+
+                if curr and hasattr(curr, 'dropin'):
+                    curr_dropin = curr.dropin
+                else:
+                    curr_dropin = 0
+
+                if curr and hasattr(curr, 'dropout'):
+                    curr_dropout = curr.dropout
+                else:
+                    curr_dropout = 0
+
+                if prev and hasattr(prev, 'dropin'):
+                    prev_dropin = prev.dropin
+                else:
+                    prev_dropin = 0
+
+                if prev and hasattr(prev, 'dropout'):
+                    prev_dropout = prev.dropout
+                else:
+                    prev_dropout = 0
+
+                data['measurements'].append({'name': 'net_io.bytes_sent', 'tags': {'interface': interface}, 'value': curr_bytes_sent - prev_bytes_sent})
+                data['measurements'].append({'name': 'net_io.bytes_recv', 'tags': {'interface': interface}, 'value': curr_bytes_recv - prev_bytes_recv})
+                data['measurements'].append({'name': 'net_io.packets_sent', 'tags': {'interface': interface}, 'value': curr_packets_sent - prev_packets_sent})
+                data['measurements'].append({'name': 'net_io.packets_recv', 'tags': {'interface': interface}, 'value': curr_packets_recv - prev_packets_recv})
+                data['measurements'].append({'name': 'net_io.errin', 'tags': {'interface': interface}, 'value': curr_errin - prev_errin})
+                data['measurements'].append({'name': 'net_io.errout', 'tags': {'interface': interface}, 'value': curr_errout - prev_errout})
+                data['measurements'].append({'name': 'net_io.dropin', 'tags': {'interface': interface}, 'value': curr_dropin - prev_dropin})
+                data['measurements'].append({'name': 'net_io.dropout', 'tags': {'interface': interface}, 'value': curr_dropout - prev_dropout})
 
             server_stats = platform.dist()
         

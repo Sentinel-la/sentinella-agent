@@ -1,9 +1,14 @@
+sentinella-agent (0.5.1) stable; urgency=low
+
+  * Fixed bug with curr and prev counters in metrics net io
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Thu, 26 Aug 2016 02:30:00 +0000
+
 sentinella-agent (0.5) stable; urgency=low
 
   * Enhanced validations in metrics.py, fixed output on invalid configurations, fixed nova & neutron installer permissions
 
  -- The Sentinel.la Team <hello@sentinel.la>  Tue, 20 Jul 2016 17:39:00 +0000
-
 
 sentinella-agent (0.4.4) stable; urgency=low
 
