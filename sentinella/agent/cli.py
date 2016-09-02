@@ -11,7 +11,7 @@ except ImportError:
 
 import click
 
-AGENT_VERSION = '0.5.1'
+AGENT_VERSION = '0.5.4'
 
 PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 PY27 = sys.version_info[0] == 2 and sys.version_info[1] == 7
@@ -77,7 +77,7 @@ def init(ctx):
                 {'neutron': [{'neutron-server': {'process': 'neutron-server', 'log': '/var/log/neutron/server.log'}},
                              {'neutron-dhcp-agent': {'process': 'neutron-dhcp-agent', 'log': '/var/log/neutron/dhcp-agent.log'}},
                              {'neutron-openvswitch-agent': {'process': 'neutron-openvswitch-agent', 'log': '/var/log/neutron/openvswitch-agent.log'}},
-                             {'neutron-l3-agent': {'process': 'neutron-openvswitch-agent', 'log': '/var/log/neutron/l3-agent.log'}},
+                             {'neutron-l3-agent': {'process': 'neutron-l3-agent', 'log': '/var/log/neutron/l3-agent.log'}},
                              {'neutron-metadata-agent': {'process': 'neutron-metadata-agent', 'log': '/var/log/neutron/metadata-agent.log'}}
                         ]}
                 ]

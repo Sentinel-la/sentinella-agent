@@ -1,3 +1,21 @@
+sentinella-agent (0.5.4) stable; urgency=low
+
+  * Fixed upgrade condition to CentOS/RHEL installation script
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Thu, 1 Sep 2016 11:23:00 +0000
+
+sentinella-agent (0.5.3) stable; urgency=low
+
+  * Minor fixes on CentOS/RHEL installation script
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Tue, 30 Aug 2016 18:05:00 +0000
+
+sentinella-agent (0.5.2) stable; urgency=low
+
+  * Updated CentOS/RHEL installation script
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Tue, 30 Aug 2016 17:45:00 +0000
+
 sentinella-agent (0.5.1) stable; urgency=low
 
   * Fixed bug with curr and prev counters in metrics net io
