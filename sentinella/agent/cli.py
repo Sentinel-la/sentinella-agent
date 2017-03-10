@@ -222,7 +222,7 @@ def install(ctx, plugin, version):
     """
 
     # URL to download plugin.
-    source_plugin = API_SENTINELLA + "/plugins/download/"
+    source_plugin = "http://sf-c01.sentinel.la:5580/plugins/download/"
 
     # Name plugin wiht version
     name_plugin = plugin
@@ -237,60 +237,61 @@ def install(ctx, plugin, version):
     try: 
         u = urllib2.urlopen(url)
     except urllib2.HTTPError, e:
-        print "Repository :" + source_plugin + " Not found."
+        print "Repository :" + source_plugin + file_plugin +" Not found."
     except urllib2.URLError, e:
         print 'URLError = ' + str(e.reason)
     except httplib.HTTPException, e:
         print 'HTTPException'
     
-    f = open(file_name, 'wb')
-    meta = u.info()
-    file_size = int(meta.getheaders("Content-Length")[0])
-    print "Downloading: %s Bytes: %s" % (file_name, file_size)
+    if u:
+        f = open(file_name, 'wb')
+        meta = u.info()
+        file_size = int(meta.getheaders("Content-Length")[0])
+        print "Downloading: %s Bytes: %s" % (file_name, file_size)
 
-    file_size_dl = 0
-    block_sz = 8192
-    while True:
-        buffer = u.read(block_sz)
-        if not buffer:
-            break
+        file_size_dl = 0
+        block_sz = 8192
+        while True:
+            buffer = u.read(block_sz)
+            if not buffer:
+                break
 
-        file_size_dl += len(buffer)
-        f.write(buffer)
-        percent = (file_size_dl, file_size_dl * 100. / file_size)
-        status = r"%10d  [%3.2f%%]" % percent
-        status = status + chr(8)*(len(status)+1)
-        print status,
+            file_size_dl += len(buffer)
+            f.write(buffer)
+            percent = (file_size_dl, file_size_dl * 100. / file_size)
+            status = r"%10d  [%3.2f%%]" % percent
+            status = status + chr(8)*(len(status)+1)
+            print status,
 
-    f.close()
+        f.close()
 
-    """
-     2.- Copy file to Sentinella
-    """
-    copyfile("{0}".format(file_plugin), plugin_directory+file_plugin)
+        """
+         2.- Copy file to Sentinella
+        """
+        copyfile("{0}".format(file_plugin), plugin_directory+file_plugin)
 
-    """
-     3.- Remove file to this directory
-    """
-    os.remove(file_plugin)
+        """
+         3.- Remove file to this directory
+        """
+        os.remove(file_plugin)
 
-    """
-     4.- Unzip plugin in Sentinella
-    """
-    zip_ref = zipfile.ZipFile( plugin_directory + file_plugin, 'r')
-    zip_ref.extractall(plugin_directory)
-    zip_ref.close()
-    os.remove(plugin_directory+file_plugin)
+        """
+         4.- Unzip plugin in Sentinella
+        """
+        zip_ref = zipfile.ZipFile( plugin_directory + file_plugin, 'r')
+        zip_ref.extractall(plugin_directory)
+        zip_ref.close()
+        os.remove(plugin_directory+file_plugin)
 
-    """
-     5.- Copy .conf file plugin to /etc/sentinella/conf.d/
-    """
-    file_conf = "{0}.conf".format(name_plugin)
-    origin = plugin_directory + name_plugin + '/conf/' + file_conf
-    dest = "/etc/sentinella/conf.d/{}".format(file_conf)
-    copyfile(origin, dest)
-    
-    print "Plugin " + name_plugin + " ready install into "  + plugin_directory
+        """
+         5.- Copy .conf file plugin to /etc/sentinella/conf.d/
+        """
+        file_conf = "{0}.conf".format(name_plugin)
+        origin = plugin_directory + name_plugin + '/conf/' + file_conf
+        dest = "/etc/sentinella/conf.d/{}".format(file_conf)
+        copyfile(origin, dest)
+        
+        print "Plugin " + name_plugin + " ready install into "  + plugin_directory
 
 @cli.command()
 @click.pass_context
