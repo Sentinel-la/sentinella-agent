@@ -139,11 +139,14 @@ class Tourbillon(object):
         return
 
     def push(self, metrics):
-        """write syncronously metrics & stats to Sentinel.la API"""
         metrics['account_key'] = self._config['account_key']
-        metrics['measurements'] = json.dumps(metrics['measurements'])
-        metrics['stats']['agent_version'] = self.agent_version
-        metrics['specs'] = json.dumps(metrics['stats'])
+        if 'plugins' in metrics:
+            metrics['plugins'] = metrics['plugins']
+            metrics.update({'stats':{'agent_version': self.agent_version }})
+        else:
+            metrics['measurements'] = json.dumps(metrics['measurements'])
+            metrics['stats']['agent_version'] = self.agent_version
+            metrics['specs'] = json.dumps(metrics['stats'])
         r = requests.post(self.api_url + '/metrics', json=metrics, proxies=self.proxy)
         logger.info('{}: - {} - push={}%'.format(metrics['server_name'], r.status_code, r.text))
         return

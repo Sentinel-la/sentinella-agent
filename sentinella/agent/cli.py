@@ -4,6 +4,10 @@ import json
 import sys
 import os
 import pip
+import urllib2
+from shutil import copyfile
+import zipfile
+
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -23,6 +27,8 @@ LOG_FILENAME = '/var/log/sentinella/sentinella.log'
 
 INDEX_FILE_URL = 'https://raw.githubusercontent.com/Sentinel-la/'\
     'sentinella-agent/master/meta/plugin_index.json'
+
+API_SENTINELLA = "https://api.sentinel.la"
 
 def get_index():
     data = urlopen(INDEX_FILE_URL).read()
@@ -82,7 +88,7 @@ def init(ctx):
                         ]}
                 ]
     
-    responses = {'api_url': 'https://api.sentinel.la',
+    responses = {'api_url': API_SENTINELLA,
                  'log_format': '',
                  'log_file': '/var/log/sentinella/sentinella.log',
                  'log_level': 'INFO',
@@ -205,22 +211,86 @@ def list(ctx, compact):
 @cli.command()
 @click.pass_context
 @click.argument('plugin', nargs=1, required=True)
-def install(ctx, plugin):
-    """install sentinella plugin"""
-    index = get_index()
-    if plugin not in index:
-        click.echo(click.style(
-                   'plugin {} not found!'.format(plugin), fg='red'))
-        return
-    pip_args = ['install']
-    meta = index[plugin]
-    if 'pip_cmd' in meta:
-        plugin = meta['pip_cmd']
-    else:
-        plugin = '{}=={}'.format(plugin, meta['version'])
-    pip_args.append(plugin)
-    pip.main(pip_args)
+@click.argument('version', nargs=1, required=True)
+def install(ctx, plugin, version):
 
+    plugin_directory = os.path.realpath(__file__)
+    plugin_directory = plugin_directory[:-12]
+    
+    """
+     1.- Dowload plugin
+    """
+
+    # URL to download plugin.
+    source_plugin = API_SENTINELLA + "/plugins/download/"
+
+    # Name plugin wiht version
+    name_plugin = plugin
+
+    # Extension file
+    extension = "zip"
+
+    file_plugin = name_plugin + "-" + version + "." + extension
+    url = source_plugin + file_plugin
+    file_name = url.split('/')[-1]
+    u = None
+    try: 
+        u = urllib2.urlopen(url)
+    except urllib2.HTTPError, e:
+        print "Repository :" + source_plugin + " Not found."
+    except urllib2.URLError, e:
+        print 'URLError = ' + str(e.reason)
+    except httplib.HTTPException, e:
+        print 'HTTPException'
+    
+    f = open(file_name, 'wb')
+    meta = u.info()
+    file_size = int(meta.getheaders("Content-Length")[0])
+    print "Downloading: %s Bytes: %s" % (file_name, file_size)
+
+    file_size_dl = 0
+    block_sz = 8192
+    while True:
+        buffer = u.read(block_sz)
+        if not buffer:
+            break
+
+        file_size_dl += len(buffer)
+        f.write(buffer)
+        percent = (file_size_dl, file_size_dl * 100. / file_size)
+        status = r"%10d  [%3.2f%%]" % percent
+        status = status + chr(8)*(len(status)+1)
+        print status,
+
+    f.close()
+
+    """
+     2.- Copy file to Sentinella
+    """
+    copyfile("{0}".format(file_plugin), plugin_directory+file_plugin)
+
+    """
+     3.- Remove file to this directory
+    """
+    os.remove(file_plugin)
+
+    """
+     4.- Unzip plugin in Sentinella
+    """
+    zip_ref = zipfile.ZipFile( plugin_directory + file_plugin, 'r')
+    zip_ref.extractall(plugin_directory)
+    zip_ref.close()
+    os.remove(plugin_directory+file_plugin)
+
+    """
+     5.- Copy .conf file plugin to /etc/sentinella/conf.d/
+    """
+    file_conf = "{0}.conf".format(name_plugin)
+    origin = plugin_directory + name_plugin + '/conf/' + file_conf
+    dest = "/etc/sentinella/conf.d/{}".format(file_conf)
+    copyfile(origin, dest)
+    
+    print "Plugin " + name_plugin + " ready install into "  + plugin_directory
 
 @cli.command()
 @click.pass_context
