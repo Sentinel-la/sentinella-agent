@@ -94,7 +94,7 @@ def get_server_usage_stats(agent):
 
             for interface in curr_io_counters:
                 try:
-		    curr = curr_io_counters[interface]
+                    curr = curr_io_counters[interface]
                 except:
                     curr = 0
 
@@ -230,7 +230,12 @@ def get_server_usage_stats(agent):
                         process_name = p.name()
                     except:
                         process_name = p.name
-                    if process_name in processes_to_check:
+                    
+                    result = [process_found for process_found in processes_to_check if process_name in process_found]
+                    
+                    if len(result) > 0:
+                        process_name = result[0]
+                        
                         if p.is_running():
                             is_running = 1
                         else:

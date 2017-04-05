@@ -10,3 +10,7 @@ debian/pypi
 *.swp
 requests-2.10.0-py2.7.egg
 dist
+.eggs/
+debian/sentinella.debhelper.log
+debian/sentinella/
+*.egg/

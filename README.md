@@ -1,6 +1,6 @@
 #### A Python agent for collecting OpenStack metrics, logs and specs and store them into Sentinel.la.
 
-![Sentinel.la](http://sentinel.la/images/logo-large.png)
+![Sentinel.la](https://www.sentinel.la/wp-content/uploads/2017/03/Sentinella.logo-02.png)
 
 -----
 

@@ -7,10 +7,8 @@ PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 exclude = ['sentinella.agent.agent2'
            if PY34_PLUS else 'sentinella.agent.agent']
 
-install_requires = ['setuptools>=25.1.0',
-		    'click==5.1',
+install_requires = ['click==5.1',
 		    'trollius==2.0',
-		    'pip==8.1.2',
 		    'requests==2.10.0',
 		    'requestsexceptions==1.1.1',
 		    'simplejson==3.8.1',

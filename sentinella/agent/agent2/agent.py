@@ -14,7 +14,8 @@ import trollius as asyncio
 from trollius import From
 from concurrent.futures import ThreadPoolExecutor
 from importlib import import_module
-import requests
+import requests.packages.urllib3
+requests.packages.urllib3.disable_warnings()
 from requestsexceptions import InsecurePlatformWarning
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ class Tourbillon(object):
         self._loop = asyncio.get_event_loop()
         self._tasks = []
         self._pluginconfig = {}
-        self.agent_version = '0.5.4'
+        self.agent_version = '0.6'
 
         with open(config_file, 'r') as f:
             self._config = json.load(f)
@@ -105,6 +106,7 @@ class Tourbillon(object):
         config_files = glob.glob(os.path.join(plugin_conf_dir,
                                               '*.conf'))
         for file_name in config_files:
+            print file_name
             k = os.path.splitext(os.path.basename(file_name))[0]
             with open(file_name, 'r') as f:
                 try:
@@ -147,7 +149,7 @@ class Tourbillon(object):
             metrics['measurements'] = json.dumps(metrics['measurements'])
             metrics['stats']['agent_version'] = self.agent_version
             metrics['specs'] = json.dumps(metrics['stats'])
-        r = requests.post(self.api_url + '/metrics', json=metrics, proxies=self.proxy)
+        r = requests.post('https://api.sentinel.la' + '/metrics', json=metrics, proxies=self.proxy)
         logger.info('{}: - {} - push={}%'.format(metrics['server_name'], r.status_code, r.text))
         return
 

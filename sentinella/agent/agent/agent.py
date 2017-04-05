@@ -44,7 +44,7 @@ class Tourbillon(object):
         self._loop = asyncio.get_event_loop()
         self._tasks = []
         self._pluginconfig = {}
-        self.agent_version = '0.5.4'
+        self.agent_version = '0.6'
 
         with open(config_file, 'r') as f:
             self._config = json.load(f)

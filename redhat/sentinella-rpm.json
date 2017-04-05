@@ -12,7 +12,7 @@
         "license": "ASF",
         "name": "sentinella",
         "summary": "A Python agent for collecting metrics, logs and specs and store them into Sentinel.la.",
-        "version": "0.5.4",
+        "version": "0.6",
         "url": "https://github.com/Sentinel-la/sentinella-agent"
     },
     "python_venv": {
