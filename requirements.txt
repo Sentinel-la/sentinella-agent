@@ -1,14 +1,14 @@
 click==5.1
 trollius==2.0
 requests==2.10.0
-requestsexceptions==1.1.1
+requestsexceptions==1.2.0
 simplejson==3.8.1
-python-novaclient==5.0.0
-python-neutronclient==4.2.0
+pbr==2.0.0
+python-novaclient==7.1.0
+python-neutronclient==6.1.0
 py-cpuinfo==0.1.8
 psutil==3.1.1
 watchdog==0.8.3
-pbr==1.10.0
 mock==1.0.1
 dnspython==1.11.1
 
