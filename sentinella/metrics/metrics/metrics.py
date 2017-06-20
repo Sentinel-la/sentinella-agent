@@ -5,13 +5,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 @asyncio.coroutine
 def get_cpu_usage(agent):
     yield from agent.run_event.wait()
     config = agent.config['linux']
     logger.info('starting "get_cpu_usage" task for "%s"', config['hostname'])
     db_config = config['database']
+
     yield from agent.async_create_database(**db_config)
 
     while agent.run_event.is_set():

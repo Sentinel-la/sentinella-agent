@@ -16,7 +16,7 @@ except ImportError:
 
 import click
 
-AGENT_VERSION = '0.6'
+AGENT_VERSION = '1.0'
 
 PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 PY27 = sys.version_info[0] == 2 and sys.version_info[1] == 7
@@ -219,7 +219,7 @@ def install(ctx, plugin, version):
     """
 
     # URL to download plugin.
-    source_plugin = "http://sf-c01.sentinel.la:5580/plugins/download/"
+    source_plugin = "https://api.sentinel.la/plugins/download/"
 
     # Name plugin wiht version
     name_plugin = plugin
@@ -237,8 +237,6 @@ def install(ctx, plugin, version):
         print "Repository :" + source_plugin + " Not found."
     except urllib2.URLError, e:
         print 'URLError = ' + str(e.reason)
-    except httplib.HTTPException, e:
-        print 'HTTPException'
     
     if u:
         f = open(file_name, 'wb')
