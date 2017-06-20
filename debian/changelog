@@ -1,6 +1,6 @@
 sentinella-agent (1.0) stable; urgency=low
 
-  * Change protocol to download plugins
+  * Change protocol to download plugins, Fixed Babel compatibility
 
  -- The Sentinel.la Team <hello@sentinel.la>  Mon, 11 Apr 2016 20:32:00 +0000
 
@@ -24,9 +24,10 @@ sentinella-agent (0.7) stable; urgency=low
 
 sentinella-agent (0.6) stable; urgency=low
 
-  * Fixed processes metrics collection for processes names having >= 15 chars long
+  * Fixed processes metrics collection for processes names having >= 15 chars
+    long
 
- -- The Sentinel.la Team <hello@sentinel.la>  Mon, 3 Apr 2016 02:34:00 +0000
+ -- The Sentinel.la Team <hello@sentinel.la>  Mon, 3 Apr 2017 02:34:00 +0000
 
 sentinella-agent (0.5.4) stable; urgency=low
 
