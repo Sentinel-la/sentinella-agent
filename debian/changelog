@@ -1,3 +1,9 @@
+sentinella-agent (1.1) stable; urgency=low
+
+  * Modify function install plugin.
+
+ -- The Sentinel.la Team <hello@sentinel.la>  Thu, 6 Jul 2017 18:35:00 +0000
+
 sentinella-agent (1.0) stable; urgency=low
 
   * Change protocol to download plugins, Fixed Babel compatibility
