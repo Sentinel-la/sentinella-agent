@@ -16,7 +16,7 @@ except ImportError:
 
 import click
 
-AGENT_VERSION = '1.0'
+AGENT_VERSION = '1.1'
 
 PY34_PLUS = sys.version_info[0] == 3 and sys.version_info[1] >= 4
 PY27 = sys.version_info[0] == 2 and sys.version_info[1] == 7
@@ -212,7 +212,9 @@ def list(ctx, compact):
 @click.argument('plugin', nargs=1, required=True)
 @click.argument('version', nargs=1, required=True)
 def install(ctx, plugin, version):
-    plugin_directory = '/usr/share/python/sentinella/lib/python2.7/site-packages/sentinella/'
+    full_path = os.path.realpath(__file__)
+    dir_path = os.path.dirname(full_path)
+    plugin_directory = dir_path[:-5]
     
     """
      1.- Dowload plugin
