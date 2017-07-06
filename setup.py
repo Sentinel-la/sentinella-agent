@@ -19,14 +19,16 @@ install_requires = ['click==5.1',
 		    'psutil==3.1.1',
 		    'watchdog==0.8.3',
 		    'mock==1.0.1',
-		    'dnspython==1.11.1']
+		    'dnspython==1.11.1',
+                    'Babel!=2.4.0,>=2.3.4']
+
 
 if not PY34_PLUS:
     install_requires.append('trollius==2.0')
 
 setup(
     name='sentinella',
-    version='0.6',
+    version='1.0',
     description='A Python agent based on Tourbillon for collecting OpenStack metrics and logs'
     ' and store them into Sentinel.la',
     packages=find_packages(exclude=exclude),

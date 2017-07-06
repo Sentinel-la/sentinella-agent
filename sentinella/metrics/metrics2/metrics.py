@@ -7,6 +7,7 @@ import logging
 from cpuinfo import cpuinfo
 from novaclient import client
 import subprocess
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ def get_server_usage_stats(agent):
     yield From(agent.run_event.wait())
     config = agent.config['metrics']
     logger.info('starting "get_server_usage" task for "%s"', hostname)
-    
+
     prev_stats = psutil.disk_io_counters(perdisk=True)
     prev_io_counters = psutil.net_io_counters(pernic=True)
     
@@ -36,6 +37,11 @@ def get_server_usage_stats(agent):
     while agent.run_event.is_set():
         yield From(asyncio.sleep(frequency))
         try:
+
+            #OpenStack processes
+            the_processes = ['nova-novncproxy', 'nova-cert', 'nova-compute', 'nova-conductor', 'nova-api', 'neutron-openvswitch-agent', 'neutron-l3-agent', 'neutron-dhcp-agent', 'nova-scheduler', 'neutron-server', 'neutron-metadata-agent']
+            the_processes_to_check = ['nova-novncproxy', 'nova-cert', 'nova-compute', 'nova-conductor', 'nova-api', 'neutron-openvswitch-agent', 'neutron-l3-agent', 'neutron-dhcp-agent', 'nova-scheduler', 'neutron-server', 'neutron-metadata-agent']
+
             cpu_percent = psutil.cpu_percent(interval=None)
             memory = psutil.virtual_memory()
             swap = psutil.swap_memory()
@@ -212,6 +218,9 @@ def get_server_usage_stats(agent):
             data['stats']['platform']['swap'] = {}
             data['stats']['platform']['swap']['total'] = swap.total
 
+            processes = the_processes
+            processes_to_check = the_processes_to_check
+             
             try:
                 p = subprocess.Popen(["nova-manage", "version"], stdout=subprocess.PIPE)
                 version = p.communicate()[0]
@@ -221,9 +230,6 @@ def get_server_usage_stats(agent):
             except Exception, e:
                 pass
 
-            # OpenStack processes
-            processes = agent.processes
-            processes_to_check = processes
             for p in psutil.process_iter():
                 try:                        
                     try:
@@ -231,8 +237,11 @@ def get_server_usage_stats(agent):
                     except:
                         process_name = p.name
                     
-                    result = [process_found for process_found in processes_to_check if process_name in process_found]
+                    process_found = False
+                    result = False 
                     
+                    result = [process_found for process_found in processes_to_check if process_name in process_found]
+
                     if len(result) > 0:
                         process_name = result[0]
                         
@@ -240,7 +249,7 @@ def get_server_usage_stats(agent):
                             is_running = 1
                         else:
                             is_running = 0
-                        
+
                         data['measurements'].append({'name': 'openstack.processes.'+process_name+'.'+'cpu_percent', 'value': p.cpu_percent()})
                         data['measurements'].append({'name': 'openstack.processes.'+process_name+'.'+'memory_percent', 'value': p.memory_percent()})
                         data['measurements'].append({'name': 'openstack.processes.'+process_name+'.'+'num_threads', 'value': p.num_threads()})
@@ -253,11 +262,11 @@ def get_server_usage_stats(agent):
                             process_status = 0
                             
                         data['measurements'].append({'name': 'openstack.processes.'+process_name+'.'+'up', 'tags': {'status': p.status()} ,'value': process_status})
-                    
+                        logger.info('OUTPUT - %s', 'openstack.processes.'+process_name+'.'+'up')
                         processes_to_check.remove(process_name)
                 except psutil.Error:
                     pass
-                
+
             for process in processes_to_check:
                 data['measurements'].append({'name': 'openstack.processes.'+process+'.'+'up', 'tags': {'status': 'down'}, 'value': 0})
 
@@ -328,7 +337,6 @@ def get_server_usage_stats(agent):
                                         data['measurements'].append({'name': 'openstack.nova-api.hypervisors.'+availability_zone.zoneName, 'tags': {'hypervisor': hypervisor.hypervisor_hostname, 'name': key_name}, 'value': getattr(stats, key_name)})
                     except Exception, e:
                         pass
-
             logger.debug('{}: server_usage={}%'.format(hostname, data))
             yield From(agent.async_push(data))
             prev_io_counters = curr_io_counters
