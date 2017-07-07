@@ -1,6 +1,6 @@
 click==5.1
 trollius==2.0
-requests==2.10.0
+requests==2.14.2
 requestsexceptions==1.2.0
 simplejson==3.8.1
 pbr==2.0.0

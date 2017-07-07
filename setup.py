@@ -9,7 +9,7 @@ exclude = ['sentinella.agent.agent2'
 
 install_requires = ['click==5.1',
 		    'trollius==2.0',
-		    'requests==2.10.0',
+		    'requests==2.14.2',
 		    'requestsexceptions==1.2.0',
 		    'simplejson==3.8.1',
                     'pbr==2.0.0',
@@ -28,7 +28,7 @@ if not PY34_PLUS:
 
 setup(
     name='sentinella',
-    version='1.0',
+    version='1.1',
     description='A Python agent based on Tourbillon for collecting OpenStack metrics and logs'
     ' and store them into Sentinel.la',
     packages=find_packages(exclude=exclude),
